@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/TourismEcosystem.Benchmarks/TourismEcosystem.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/TourismEcosystem.Api/TourismEcosystem.Api.csproj" />
   </Folder>

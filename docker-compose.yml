@@ -1,0 +1,34 @@
+services:
+  mongo:
+    image: mongo:8.0
+    command: ["--wiredTigerCacheSizeGB", "1"]
+    ports: ["27019:27017"]
+    volumes: ["mongo-data:/data/db"]
+    cpus: 4
+    mem_limit: 2g
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Tourism_Bench1}"
+      MSSQL_MEMORY_LIMIT_MB: "1536"
+    ports: ["14334:1433"]
+    volumes: ["mssql-data:/var/opt/mssql"]
+    cpus: 4
+    mem_limit: 2g
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: "neo4j/Tourism_Graph1"
+      NEO4J_server_memory_heap_max__size: "512m"
+      NEO4J_server_memory_pagecache_size: "256m"
+    ports: ["7475:7474", "7688:7687"]
+    volumes: ["neo4j-data:/data"]
+    mem_limit: 1g
+
+volumes:
+  mongo-data:
+  mssql-data:
+  neo4j-data:

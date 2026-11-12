@@ -1,0 +1,144 @@
+{
+  "_id" : 1,
+  "tourId" : 1,
+  "title" : "Гірськолижний тур: Туреччина, 8 дн.",
+  "description" : null,
+  "tourType" : "Ski",
+  "countryId" : 1,
+  "country" : "Туреччина",
+  "startDate" : { "$date" : "2026-10-05T00:00:00Z" },
+  "endDate" : { "$date" : "2026-10-12T00:00:00Z" },
+  "durationDays" : 8,
+  "price" : { "$numberDecimal" : "21600" },
+  "currency" : "UAH",
+  "status" : "Closed",
+  "capacity" : 40,
+  "availableSeats" : 16,
+  "guide" : {
+    "_id" : 87,
+    "name" : "Наталія Савченко (87)",
+    "languages" : "uk, en, it"
+  },
+  "itinerary" : [{
+      "day" : 1,
+      "cityId" : 8,
+      "city" : "Туреччина, місто 8",
+      "description" : "День 1: Туреччина, місто 8",
+      "hotel" : {
+        "_id" : 37,
+        "name" : "Гранд 8",
+        "stars" : 5
+      }
+    }, {
+      "day" : 2,
+      "cityId" : 8,
+      "city" : "Туреччина, місто 8",
+      "description" : "День 2: Туреччина, місто 8",
+      "hotel" : {
+        "_id" : 37,
+        "name" : "Гранд 8",
+        "stars" : 5
+      }
+    }, {
+      "day" : 3,
+      "cityId" : 8,
+      "city" : "Туреччина, місто 8",
+      "description" : "День 3: Туреччина, місто 8",
+      "hotel" : {
+        "_id" : 37,
+        "name" : "Гранд 8",
+        "stars" : 5
+      }
+    }, {
+      "day" : 4,
+      "cityId" : 8,
+      "city" : "Туреччина, місто 8",
+      "description" : "День 4: Туреччина, місто 8",
+      "hotel" : {
+        "_id" : 37,
+        "name" : "Гранд 8",
+        "stars" : 5
+      }
+    }, {
+      "day" : 5,
+      "cityId" : 4,
+      "city" : "Туреччина, місто 4",
+      "description" : "День 5: Туреччина, місто 4",
+      "hotel" : {
+        "_id" : 18,
+        "name" : "Бриз 4",
+        "stars" : 4
+      }
+    }, {
+      "day" : 6,
+      "cityId" : 4,
+      "city" : "Туреччина, місто 4",
+      "description" : "День 6: Туреччина, місто 4",
+      "hotel" : {
+        "_id" : 18,
+        "name" : "Бриз 4",
+        "stars" : 4
+      }
+    }, {
+      "day" : 7,
+      "cityId" : 4,
+      "city" : "Туреччина, місто 4",
+      "description" : "День 7: Туреччина, місто 4",
+      "hotel" : {
+        "_id" : 18,
+        "name" : "Бриз 4",
+        "stars" : 4
+      }
+    }, {
+      "day" : 8,
+      "cityId" : 4,
+      "city" : "Туреччина, місто 4",
+      "description" : "День 8: Туреччина, місто 4",
+      "hotel" : null
+    }],
+  "transfers" : [{
+      "type" : "Flight",
+      "carrier" : "Flight Line 10",
+      "fromCityId" : 21,
+      "toCityId" : 8,
+      "departAt" : { "$date" : "2026-10-05T11:00:00Z" },
+      "arriveAt" : { "$date" : "2026-10-05T13:37:00Z" }
+    }, {
+      "type" : "Train",
+      "carrier" : "Train Line 6",
+      "fromCityId" : 8,
+      "toCityId" : 4,
+      "departAt" : { "$date" : "2026-10-09T10:00:00Z" },
+      "arriveAt" : { "$date" : "2026-10-09T13:54:00Z" }
+    }],
+  "excursions" : [],
+  "priceHistory" : [{
+      "oldPrice" : { "$numberDecimal" : "24700" },
+      "newPrice" : { "$numberDecimal" : "23100" },
+      "changedAt" : { "$date" : "2025-11-20T00:00:00Z" }
+    }, {
+      "oldPrice" : { "$numberDecimal" : "23100" },
+      "newPrice" : { "$numberDecimal" : "21600" },
+      "changedAt" : { "$date" : "2025-12-05T00:00:00Z" }
+    }],
+  "rating" : {
+    "avg" : 4.0,
+    "count" : 2
+  },
+  "reviews" : [{
+      "touristId" : 42,
+      "rating" : 5,
+      "comment" : "Гід супер",
+      "createdAt" : { "$date" : "2026-10-14T21:51:00Z" }
+    }, {
+      "touristId" : 41,
+      "rating" : 3,
+      "comment" : "Все сподобалось",
+      "createdAt" : { "$date" : "2026-10-13T02:50:00Z" }
+    }],
+  "attributes" : {
+    "liftPassIncluded" : false,
+    "slopeKm" : 362.0,
+    "skiRental" : true
+  }
+}

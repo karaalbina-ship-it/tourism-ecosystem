@@ -1,0 +1,119 @@
+step
+"--- 1. Create countries and cities (UNWIND + CREATE)"
+step
+"--- 2. Create transfers between cities (relationships with properties)"
+step
+"--- 3. Create hotels, tours (VISITS with day), tourists, bookings and reviews"
+step
+"--- 4. Count nodes by label and relationships by type"
+label, nodes
+"City", 14
+"Country", 7
+"Hotel", 10
+"Tour", 6
+"Tourist", 12
+relationship, relationships
+"BOOKED", 21
+"IN", 24
+"STAYS_AT", 11
+"TRANSFER", 22
+"VISITS", 12
+step
+"--- 5. MATCH + WHERE: 4-5 star hotels in Italy and Greece"
+country, city, hotel, stars
+"Греція", "Санторіні", "Aegean Blue", 5
+"Італія", "Венеція", "Canal Grande", 4
+"Італія", "Флоренція", "Firenze Palace", 4
+step
+"--- 6. Direct transfers from Kraków, cheapest first"
+destination, type, minutes, price
+"Рим", "Flight", 140, 4100
+"Афіни", "Flight", 160, 4900
+"Анталія", "Flight", 185, 5600
+"Хургада", "Flight", 260, 7200
+step
+"--- 7. Itinerary of a tour (relationship property day)"
+day, city, hotel
+1, "Рим", "Roma Centro"
+4, "Флоренція", "Firenze Palace"
+7, "Венеція", "Canal Grande"
+step
+"--- 8. Routes Kyiv -> Santorini with at most 4 legs, no city twice (variable-length path)"
+route, legs, price, minutes
+["Київ", "Варшава", "Афіни", "Санторіні"], 3, 9300, 1370
+["Київ", "Львів", "Краків", "Афіни", "Санторіні"], 4, 9300, 1180
+["Київ", "Варшава", "Рим", "Афіни", "Санторіні"], 4, 12200, 1485
+step
+"--- 9. shortestPath by number of legs: Lviv -> Hurghada"
+route, legs, price
+["Львів", "Краків", "Хургада"], 2, 8400
+step
+"--- 10. Cheapest route Lviv -> Hurghada (all paths, sum of price)"
+route, legs, price
+["Львів", "Краків", "Хургада"], 2, 8400
+["Львів", "Київ", "Варшава", "Стамбул", "Каїр", "Хургада"], 5, 12100
+step
+"--- 11. Which tours can be reached from Lviv with at most 2 legs"
+tour, startCity, price
+"Вихідні у Львові", "Львів", 6500
+"Грецькі острови", "Афіни", 38000
+"Перлини Італії", "Рим", 42000
+step
+"--- 12. Aggregation: bookings and average rating per tour"
+tour, bookings, avgRating
+"Грецькі острови", 5, 4.5
+"Перлини Італії", 5, 4.25
+"Стамбул і Анталія", 4, 3.67
+"Барселона і Рим", 3, 4.67
+"Єгипет: Каїр і Червоне море", 2, NULL
+"Вихідні у Львові", 2, 4.5
+step
+"--- 13. Recommendation: tourists who booked \"Перлини Італії\" also booked"
+alsoBooked, tourists
+"Грецькі острови", 3
+"Барселона і Рим", 2
+"Вихідні у Львові", 1
+step
+"--- 14. Personal recommendation for tourist 5: tours booked by similar tourists, not booked yet"
+recommended, score
+"Грецькі острови", 2
+step
+"--- 15. MERGE (upsert): add a new transfer, run twice — created only once"
+from, to, price, created
+"Львів", "Варшава", 1400, TRUE
+from, to, price, created
+"Львів", "Варшава", 1400, FALSE
+step
+"--- 16. SET: raise the price of all Beach tours by 5%"
+tour, newPrice
+"Єгипет: Каїр і Червоне море", 36750
+"Грецькі острови", 39900
+"Стамбул і Анталія", 32550
+step
+"--- 17. DELETE a relationship and REMOVE a property"
+result
+"booking deleted"
+cleanedTransfers
+1
+step
+"--- 18. Tours nobody rated yet (OPTIONAL MATCH + IS NULL)"
+tour
+"Єгипет: Каїр і Червоне море"
+step
+"--- 19. Cities reachable from Kyiv in exactly 2 legs, not directly"
+city
+"Афіни"
+"Барселона"
+"Краків"
+"Рим"
+"Стамбул"
+step
+"--- 20. Indexes and how many times each was read (counter since the database start)"
+name, labelsOrTypes, properties, type, readCount
+"city_id", ["City"], ["id"], "RANGE", 160
+"city_name", ["City"], ["name"], "RANGE", 24
+"country_id", ["Country"], ["id"], "RANGE", 42
+"hotel_id", ["Hotel"], ["id"], "RANGE", 42
+"hotel_stars", ["Hotel"], ["stars"], "RANGE", 2
+"tour_id", ["Tour"], ["id"], "RANGE", 56
+"tourist_id", ["Tourist"], ["id"], "RANGE", 68
