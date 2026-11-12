@@ -1,0 +1,233 @@
+Project TourismEcosystemDb {
+  database_type: 'SQLServer'
+  Note: '''
+  20 tables. Soft delete (IsDeleted/DeletedAt/DeletedBy): Tourists, Guides, Hotels, Tours, Excursions.
+  Audit (CreatedAt/CreatedBy/UpdatedAt/UpdatedBy): Tourists, Hotels, Tours, TourDepartures, Bookings, Payments.
+  '''
+}
+
+Table Roles {
+  RoleId int [pk, increment]
+  Name nvarchar(50) [not null, unique]
+}
+
+Table Users {
+  UserId int [pk, increment]
+  RoleId int [not null, ref: > Roles.RoleId]
+  Email nvarchar(255) [not null, unique]
+  FullName nvarchar(150) [not null]
+  Phone nvarchar(20)
+  IsActive bit [not null, default: 1]
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+}
+
+Table Countries {
+  CountryId int [pk, increment]
+  Name nvarchar(100) [not null, unique]
+  IsoCode char(2) [not null, unique]
+}
+
+Table Cities {
+  CityId int [pk, increment]
+  CountryId int [not null, ref: > Countries.CountryId]
+  Name nvarchar(100) [not null]
+  indexes {
+    (CountryId, Name) [unique]
+  }
+}
+
+Table Tourists {
+  TouristId int [pk, increment]
+  FullName nvarchar(150) [not null]
+  BirthDate date [not null]
+  PassportNo nvarchar(20) [note: 'unique among non-deleted']
+  Phone nvarchar(20)
+  Email nvarchar(255)
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2
+  DeletedBy int [ref: > Users.UserId]
+}
+
+Table Guides {
+  GuideId int [pk, increment]
+  FullName nvarchar(150) [not null]
+  Phone nvarchar(20) [not null]
+  Languages nvarchar(100) [not null]
+  ExperienceYears tinyint [not null, default: 0]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2
+  DeletedBy int [ref: > Users.UserId]
+}
+
+Table Hotels {
+  HotelId int [pk, increment]
+  CityId int [not null, ref: > Cities.CityId]
+  Name nvarchar(150) [not null]
+  Stars tinyint [not null, note: '1..5']
+  Address nvarchar(250) [not null]
+  Phone nvarchar(20)
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2
+  DeletedBy int [ref: > Users.UserId]
+}
+
+Table RoomTypes {
+  RoomTypeId int [pk, increment]
+  Name nvarchar(50) [not null, unique]
+  Capacity tinyint [not null]
+}
+
+Table HotelRooms {
+  HotelRoomId int [pk, increment]
+  HotelId int [not null, ref: > Hotels.HotelId]
+  RoomTypeId int [not null, ref: > RoomTypes.RoomTypeId]
+  PricePerNight "decimal(12,2)" [not null]
+  RoomsCount smallint [not null]
+  indexes {
+    (HotelId, RoomTypeId) [unique]
+  }
+}
+
+Table Tours {
+  TourId int [pk, increment]
+  CountryId int [not null, ref: > Countries.CountryId]
+  Title nvarchar(200) [not null]
+  Description nvarchar(max)
+  DurationDays tinyint [not null]
+  BasePrice "decimal(12,2)" [not null]
+  Currency char(3) [not null, default: 'UAH']
+  RowVersion rowversion [not null]
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2
+  DeletedBy int [ref: > Users.UserId]
+}
+
+Table TourItinerary {
+  ItineraryId int [pk, increment]
+  TourId int [not null, ref: > Tours.TourId]
+  DayNo tinyint [not null]
+  CityId int [not null, ref: > Cities.CityId]
+  HotelId int [ref: > Hotels.HotelId]
+  Description nvarchar(500) [not null]
+  indexes {
+    (TourId, DayNo) [unique]
+  }
+}
+
+Table TourDepartures {
+  DepartureId int [pk, increment]
+  TourId int [not null, ref: > Tours.TourId]
+  GuideId int [ref: > Guides.GuideId]
+  StartDate date [not null]
+  EndDate date [not null]
+  Capacity smallint [not null]
+  Status nvarchar(10) [not null, default: 'Open', note: 'Open / Closed / Cancelled']
+  RowVersion rowversion [not null]
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+}
+
+Table TourPriceHistory {
+  PriceHistoryId int [pk, increment]
+  TourId int [not null, ref: > Tours.TourId]
+  OldPrice "decimal(12,2)" [not null]
+  NewPrice "decimal(12,2)" [not null]
+  ChangedAt datetime2 [not null, default: `sysutcdatetime()`]
+  ChangedBy int [ref: > Users.UserId]
+}
+
+Table Transfers {
+  TransferId int [pk, increment]
+  DepartureId int [not null, ref: > TourDepartures.DepartureId]
+  TransportType nvarchar(10) [not null, note: 'Flight / Bus / Train / Ferry']
+  Carrier nvarchar(100) [not null]
+  FromCityId int [not null, ref: > Cities.CityId]
+  ToCityId int [not null, ref: > Cities.CityId]
+  DepartAt datetime2 [not null]
+  ArriveAt datetime2 [not null]
+}
+
+Table Bookings {
+  BookingId int [pk, increment]
+  DepartureId int [not null, ref: > TourDepartures.DepartureId]
+  LeadTouristId int [not null, ref: > Tourists.TouristId]
+  TotalAmount "decimal(12,2)" [not null, default: 0]
+  Status nvarchar(10) [not null, default: 'Pending', note: 'Pending / Confirmed / Cancelled']
+  BookedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CancelledAt datetime2
+  RefundAmount "decimal(12,2)"
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+}
+
+Table BookingTravelers {
+  BookingId int [not null, ref: > Bookings.BookingId]
+  TouristId int [not null, ref: > Tourists.TouristId]
+  Price "decimal(12,2)" [not null]
+  indexes {
+    (BookingId, TouristId) [pk]
+  }
+}
+
+Table Payments {
+  PaymentId int [pk, increment]
+  BookingId int [not null, ref: > Bookings.BookingId]
+  Amount "decimal(12,2)" [not null]
+  DueDate date [not null]
+  PaidAt datetime2
+  Method nvarchar(10) [not null, note: 'Cash / Card / Transfer']
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  CreatedBy int [not null, ref: > Users.UserId]
+  UpdatedAt datetime2
+  UpdatedBy int [ref: > Users.UserId]
+}
+
+Table Excursions {
+  ExcursionId int [pk, increment]
+  CityId int [not null, ref: > Cities.CityId]
+  GuideId int [ref: > Guides.GuideId]
+  Name nvarchar(150) [not null]
+  Price "decimal(12,2)" [not null]
+  DurationHours "decimal(4,1)" [not null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2
+  DeletedBy int [ref: > Users.UserId]
+}
+
+Table BookingExcursions {
+  BookingId int [not null, ref: > Bookings.BookingId]
+  ExcursionId int [not null, ref: > Excursions.ExcursionId]
+  Persons tinyint [not null]
+  UnitPrice "decimal(12,2)" [not null]
+  indexes {
+    (BookingId, ExcursionId) [pk]
+  }
+}
+
+Table Reviews {
+  ReviewId int [pk, increment]
+  DepartureId int [not null, ref: > TourDepartures.DepartureId]
+  TouristId int [not null, ref: > Tourists.TouristId]
+  Rating tinyint [not null, note: '1..5']
+  Comment nvarchar(1000)
+  CreatedAt datetime2 [not null, default: `sysutcdatetime()`]
+  indexes {
+    (DepartureId, TouristId) [unique]
+  }
+}
